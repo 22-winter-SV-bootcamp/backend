@@ -3,7 +3,7 @@ import os, environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-is_dev = True
+is_dev = False
 
 env = environ.Env(DEBUG=(bool, True))
 
@@ -69,8 +69,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db(),
+    'default': env.db()
 }
+
 
 
 # Password validation
