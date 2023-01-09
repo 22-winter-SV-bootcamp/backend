@@ -33,23 +33,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
-  nginx:
-    build: ./nginx
-    container_name: nginx
-    ports:
-      - 80:8080
-    volumes:
-      - static_volume:/backend/staticfiles
-      - media_volume:/backend/mediafiles
-      - build_folder:/var/www/frontend
-    depends_on:
-      - backend
-#      - frontend
+  
 
 
 
 volumes:
-  mysql_data: 
-  static_volume:
-  media_volume:
-  build_folder:
+  mysql_data: {}
