@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     # rest framework
     'rest_framework',
     # local apps
+    'images',
 ]
 
 MIDDLEWARE = [
