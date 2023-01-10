@@ -17,7 +17,7 @@ services:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 20s
       retries: 10
-
+      
 
   backend:
     container_name: backend
@@ -33,6 +33,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  
 
 
 

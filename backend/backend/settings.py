@@ -34,8 +34,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # rest framework
     'rest_framework',
+    # swagger
+    'drf_yasg',
     # local apps
-    'testapi',
+    'images',
+    'styles',
 ]
 
 MIDDLEWARE = [
@@ -73,8 +76,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db(),
+    'default': env.db()
 }
+
 
 
 # Password validation
