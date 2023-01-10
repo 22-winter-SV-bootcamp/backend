@@ -3,7 +3,7 @@ import os, environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-is_dev = False
+is_dev = True
 
 env = environ.Env(DEBUG=(bool, True))
 
@@ -20,6 +20,9 @@ else:
 SECRET_KEY = env('SECRET_KEY')
 ALLOWED_HOSTS = ["*"]
 DEBUG = env('DEBUG')
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
 
 # Application definition
 INSTALLED_APPS = [
@@ -33,6 +36,7 @@ INSTALLED_APPS = [
     'rest_framework',
     # local apps
     'images',
+    'styles',
 ]
 
 MIDDLEWARE = [
