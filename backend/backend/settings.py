@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # rest framework
     'rest_framework',
+    # swagger
+    'drf_yasg',
     # local apps
     'images',
     'styles',
