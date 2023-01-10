@@ -17,4 +17,3 @@ class image(basemodel):
     def __str__(self):
         result_id = str(self.id)
         return result_id
-
