@@ -5,5 +5,5 @@ from rest_framework.routers import DefaultRouter
 
 
 urlpatterns = [
-    path('',views.ResultView.as_view())
+    path('',views.ShowStyleView.as_view())
 ]
