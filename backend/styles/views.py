@@ -11,6 +11,7 @@ from rest_framework import status
 from rest_framework.response import Response
 import boto3
 from images import views
+import os
 # Create your views here.
 
 class ShowStyleView(APIView):
@@ -28,44 +29,26 @@ class ShowStyleView(APIView):
         # '''
         # data = image.objects.filter(link=link)
         # serializer = imageSerializer(data)
-        
-        # 커스텀 내용 db 저장 
-        # reqData = request.data
-        # gender = reqData['gender']
-        # top = reqData['top']
-        # top_color = reqData['top_color']
-        # bottom
-        image = imageSerializer(data=request.data)
 
         res = styleSerializer(data=request.data)
         if res.is_valid():
             res.save()
-            # return Response(이미지 링크)
-             
-
-            # return HttpResponse(href)
-            # s3 bucket에 파일 보내서 이미지 반환받기
-            # return Response(이미지 링크)
+            
             data = request.FILES.get('img')
+            file_type = os.path.splitext(data[1])   # 파일 확장자에 따라 url 생성
             uuid = str(uuid4())
             s3_client = boto3.client(
                 's3',
                 aws_access_key_id=AWS_ACCESS_KEY_ID,
                 aws_secret_access_key=AWS_SECRET_ACCESS_KEY
             )
-            s3_client.put_object(Body=data, Bucket=AWS_STORAGE_BUCKET_NAME, Key=uuid + ".jpg")
+            s3_client.put_object(Body=data, Bucket=AWS_STORAGE_BUCKET_NAME, Key=uuid + file_type)
             url = "http://"+AWS_STORAGE_BUCKET_NAME+".s3.ap-northeast-2.amazonaws.com/" + \
-                       uuid + ".jpg"
+                       uuid + file_type
             url = url.replace(" ", "/")
-
-            if image.is_valid():
-                image.save()
-            else :
-                return Response(res.errors,status=status.HTTP_400_BAD_REQUEST)
-                
+            img_link = image.objects.create(link=url)
+            img_link.save()
             return JsonResponse({"url": url},status=200)
-            
-            # 임의 이미지 링크 반환
             
         else :
             return Response(res.errors,status=status.HTTP_400_BAD_REQUEST)
