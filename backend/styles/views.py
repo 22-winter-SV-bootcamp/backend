@@ -10,6 +10,7 @@ from .models import *
 from rest_framework import status
 from rest_framework.response import Response
 import boto3
+from images import views
 # Create your views here.
 
 class ShowStyleView(APIView):
@@ -34,12 +35,14 @@ class ShowStyleView(APIView):
         # top = reqData['top']
         # top_color = reqData['top_color']
         # bottom
+        image = imageSerializer(data=request.data)
+
         res = styleSerializer(data=request.data)
         if res.is_valid():
             res.save()
             # return Response(이미지 링크)
              
-        
+
             # return HttpResponse(href)
             # s3 bucket에 파일 보내서 이미지 반환받기
             # return Response(이미지 링크)
@@ -54,6 +57,12 @@ class ShowStyleView(APIView):
             url = "http://"+AWS_STORAGE_BUCKET_NAME+".s3.ap-northeast-2.amazonaws.com/" + \
                        uuid + ".jpg"
             url = url.replace(" ", "/")
+
+            if image.is_valid():
+                image.save()
+            else :
+                return Response(res.errors,status=status.HTTP_400_BAD_REQUEST)
+                
             return JsonResponse({"url": url},status=200)
             
             # 임의 이미지 링크 반환

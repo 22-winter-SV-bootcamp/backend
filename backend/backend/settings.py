@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # local apps
     'images',
     'styles',
+    'storages',
 ]
 
 MIDDLEWARE = [
