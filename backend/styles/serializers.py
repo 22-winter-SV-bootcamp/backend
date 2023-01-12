@@ -4,4 +4,6 @@ from .models import style
 class styleSerializer(ModelSerializer):
     class Meta:
         model = style
-        fields = '__all__'
+        fields = ('__all__')
+       
+        

@@ -33,6 +33,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  
   ai:
     container_name: ai
     build: ./ai
@@ -46,9 +47,6 @@ services:
       - ./ai:/ai
     depends_on:
       - backend
-  
-
-
 
 volumes:
   mysql_data: {}
