@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django.db import models
+import uuid
 
 # Create your models here.
 class basemodel(models.Model):  # 수정시간, 생성시간 모델
@@ -11,7 +12,7 @@ class basemodel(models.Model):  # 수정시간, 생성시간 모델
 
 class image(basemodel):
     id = models.AutoField(primary_key=True)  # pk
-    uuid = models.CharField(null=False, max_length=36, default='')
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     link = models.CharField(max_length=200)
     
     def __str__(self):
