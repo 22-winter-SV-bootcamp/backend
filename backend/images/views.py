@@ -1,16 +1,17 @@
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-import requests
+from .tasks import ai_task
 from django.http import JsonResponse
-
+from .utils import get_image_url
+import json
 
 class Images(APIView):
     def get(self, request):
         return 
 
     def post(self, request):
-        img = request.FILES.get('file')
-        r = requests.post('http://ai:8081/api/v1/images', files = {"file": img})
-        ret = r.json()
-        return JsonResponse({"ai_results":ret['ai_results']})
+        json_text = '{"file": "'+get_image_url(request.FILES.get('file'))+'"}'
+        task = ai_task.delay(json.loads(json_text))
+        return JsonResponse({"task_id": task.id})
+
+

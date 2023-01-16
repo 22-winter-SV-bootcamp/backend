@@ -19,3 +19,5 @@ django_celery_beat
 django_celery_results
 celery
 redis
+
+numpy>=1.18.5
