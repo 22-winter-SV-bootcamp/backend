@@ -1,4 +1,5 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
+from rest_framework import status
 from django.shortcuts import render
 from requests import Response
 from rest_framework.decorators import api_view
@@ -17,11 +18,16 @@ def recentImage(request):
         
         try:
             list = paginator.page(pages) # 보여줄 페이지는 쿼리스트링 값
+            res = list.object_list
+            serializer = imageSerializer(res, many=True)
+            # if serializer.is_valid():
+            return JsonResponse(serializer.data,status=status.HTTP_200_OK, safe=False)
+        # 예외 처리
         except PageNotAnInteger:    
-            list = paginator.page(1) # 예외값이 들어오면 첫페이지로
+            return Response(status=status.HTTP_404_NOT_FOUND)
         except EmptyPage:
-            list = paginator.page(paginator.num_pages) # 빈 페이지면 마지막 페이지로
+            return Response(status=status.HTTP_404_NOT_FOUND)
         
-        res = list.object_list
-        serializer = imageSerializer(res, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        
+        
+        
