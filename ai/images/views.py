@@ -22,7 +22,7 @@ def get_ai_result(request):
     results.render()
     results_dict = results.pandas().xyxy[0].to_dict(orient="records")
     if not results_dict:
-        return {"ai_results": "none"}
+        return JsonResponse({"ai_results": "none"})
     else:
         ai_results = []
         for result in results_dict:
