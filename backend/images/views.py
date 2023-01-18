@@ -20,10 +20,11 @@ def recentImage(request):
             serializer = imageSerializer(res, many=True)
             return JsonResponse(serializer.data,status=status.HTTP_200_OK, safe=False)
         # 예외 처리
+
         except PageNotAnInteger:    
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({"Error":"Page must be Integer"},status=status.HTTP_404_NOT_FOUND)
         except EmptyPage:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({"Error":"Empty page"},status=status.HTTP_404_NOT_FOUND)
         
         
         
