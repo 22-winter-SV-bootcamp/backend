@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     # local apps
     'images',
     'styles',
+    # monitoring
+    'django_prometheus'
 ]
 
 MIDDLEWARE = [
