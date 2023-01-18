@@ -36,9 +36,12 @@ INSTALLED_APPS = [
     'rest_framework',
     # swagger
     'drf_yasg',
+    # celery
+    'django_celery_results',
     # local apps
     'images',
     'styles',
+    
 ]
 
 MIDDLEWARE = [
@@ -78,7 +81,6 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': env.db()
 }
-
 
 
 # Password validation
@@ -125,3 +127,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CELERY_BROKER_URL = 'amqp://rabbitmq:5672'
+CELERY_ACCEPT_CONTENT = ['pickle', 'json']
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Seoul'
+DATA_UPLOAD_MAX_MEMORY_SIZE = int(1e10)
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://redis:6379',
+    }
+}

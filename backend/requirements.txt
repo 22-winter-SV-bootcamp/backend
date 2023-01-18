@@ -10,3 +10,14 @@ gunicorn==20.1.0
 pymysql==1.0.2
 mysqlclient
 cryptography
+
+
+#ai
+requests==2.28.1
+PyAMQP
+django_celery_beat
+django_celery_results
+celery
+redis
+
+numpy>=1.18.5

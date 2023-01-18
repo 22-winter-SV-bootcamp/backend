@@ -1,12 +1,18 @@
 from django.http import JsonResponse
 from rest_framework import status
 from django.shortcuts import render
-from requests import Response
+from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from images.models import image 
 from .serializers import imageSerializer
+from rest_framework.views import APIView
 
+from .utils import get_image_url
+from .tasks import ai_task
+from .serializers import imageSerializer
+
+import json
 @api_view(['GET'])
 def recentImage(request):
     if request.method == 'GET':
@@ -26,7 +32,13 @@ def recentImage(request):
         except EmptyPage:
             return JsonResponse({"Error":"Empty page"},status=status.HTTP_404_NOT_FOUND)
         
-        
-        
-        
 
+class Images(APIView):
+    def get(self, request):
+        return 
+
+
+    def post(self, request):
+        json_text = '{"file": "'+get_image_url(request.FILES.get('file'))+'"}'
+        task = ai_task.delay(json.loads(json_text))
+        return JsonResponse({"task_id": task.id})
