@@ -23,7 +23,7 @@ class ShowStyleView(APIView):
                 aws_access_key_id=AWS_ACCESS_KEY_ID,
                 aws_secret_access_key=AWS_SECRET_ACCESS_KEY
             )
-            # s3_client.put_object(Body=data, Bucket=AWS_STORAGE_BUCKET_NAME, Key=uuid + file_type)    # 버킷에 이미지 저장
+            s3_client.put_object(Body=data, Bucket=AWS_STORAGE_BUCKET_NAME, Key=uuid + file_type)    # 버킷에 이미지 저장
             url = "http://"+AWS_STORAGE_BUCKET_NAME+".s3.ap-northeast-2.amazonaws.com/" + \
                 uuid + file_type
             url = url.replace(" ", "/")
