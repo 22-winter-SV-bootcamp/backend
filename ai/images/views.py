@@ -19,13 +19,17 @@ def get_ai_result(request):
     model = torch.hub.load(hubconfig, 'custom', path=weightfile, source='local')
 
     results = model(img)
+    # print(results)
     results.render()
+    # print(results)
     results_dict = results.pandas().xyxy[0].to_dict(orient="records")
+    # print(results_dict)
     if not results_dict:
         return JsonResponse({"ai_results": "none"})
     else:
         ai_results = []
         for result in results_dict:
             if result.get('name') not in ai_results:
+                print(result.get('class'))
                 ai_results.append(result.get('name'))
     return JsonResponse({"ai_results":' '.join(ai_results)})

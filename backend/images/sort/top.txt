@@ -1,0 +1,14 @@
+-blazer
+blouse
+cardigan
+coat
+hoodi
+jumper
+mustang
+pkshirts
+onepiece
+riders
+shirts
+sweater
+sweatershirts
+t-shirts
