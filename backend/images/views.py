@@ -13,9 +13,33 @@ from .serializers import imageSerializer
 from images.result import task_result
 import json
 from celery.exceptions import TimeoutError
-
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework.parsers import MultiPartParser
+qs_page = [
+	openapi.Parameter(
+        "page",
+        openapi.IN_QUERY,
+        description="page",
+        type=openapi.FORMAT_DATE,
+        default=""
+    )
+]
+qs_task = [
+	openapi.Parameter(
+        "task",
+        openapi.IN_QUERY,
+        description="task",
+        type=openapi.TYPE_STRING,
+        default=""
+    )
+]
 
 class Images(APIView):
+    @swagger_auto_schema(operation_id='recent image',manual_parameters=qs_page,responses={
+                status.HTTP_200_OK: 'Success',
+                status.HTTP_404_NOT_FOUND: "Error"
+            })
     def get(self, request):
         if request.method == 'GET':
             pages = request.GET.get('page')
@@ -33,15 +57,32 @@ class Images(APIView):
             return JsonResponse({"Error":"Page must be Integer"},status=status.HTTP_404_NOT_FOUND)
         except EmptyPage:
             return JsonResponse({"Error":"Empty page"},status=status.HTTP_404_NOT_FOUND)
+    parser_classes = [MultiPartParser]
 
-
+    @swagger_auto_schema(
+            operation_id='task_id',
+            manual_parameters=[
+                openapi.Parameter('file', openapi.IN_FORM, type=openapi.TYPE_FILE, description='image to be uploaded'),
+            ],
+            responses={
+                status.HTTP_200_OK: 'Success',
+                status.HTTP_404_NOT_FOUND: "Error"
+            }
+        )
     def post(self, request):
         json_text = '{"file": "'+get_image_url(request.FILES.get('file'))+'"}'
         task = ai_task.delay(json.loads(json_text))
+        print(task)
         return JsonResponse({"task_id": task.id})
 
+
+@swagger_auto_schema(operation_id='task_result',method='get',manual_parameters=qs_task,responses={
+                status.HTTP_200_OK: 'Success',
+                status.HTTP_404_NOT_FOUND: "Error"
+            })
 @api_view(['GET'])
 def get_task(request):
+    
     if request.method == 'GET':
         try:
             task_id = request.GET.get('task_id')

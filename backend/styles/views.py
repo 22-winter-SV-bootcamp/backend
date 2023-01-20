@@ -8,10 +8,13 @@ from images.serializers import *
 from .models import *
 from rest_framework import status
 from images.utils import get_image_url
+from drf_yasg.utils import swagger_auto_schema
+
 
 # Create your views here.
 
 class ShowStyleView(APIView):
+    @swagger_auto_schema(operation_id='customizing',query_serializer=styleSerializer, responses={200:'SUCCESS',404:'Error'})
     def post(self,request):
         try:
             data = request.FILES.get('file')
