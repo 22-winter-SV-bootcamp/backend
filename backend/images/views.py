@@ -16,6 +16,7 @@ from celery.exceptions import TimeoutError
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser
+
 qs_page = [
 	openapi.Parameter(
         "page",
@@ -27,7 +28,7 @@ qs_page = [
 ]
 qs_task = [
 	openapi.Parameter(
-        "task",
+        "task_id",
         openapi.IN_QUERY,
         description="task",
         type=openapi.TYPE_STRING,
@@ -57,8 +58,8 @@ class Images(APIView):
             return JsonResponse({"Error":"Page must be Integer"},status=status.HTTP_404_NOT_FOUND)
         except EmptyPage:
             return JsonResponse({"Error":"Empty page"},status=status.HTTP_404_NOT_FOUND)
+    
     parser_classes = [MultiPartParser]
-
     @swagger_auto_schema(
             operation_id='task_id',
             manual_parameters=[
