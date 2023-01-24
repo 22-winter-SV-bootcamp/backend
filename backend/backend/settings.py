@@ -3,7 +3,7 @@ import os, environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-is_dev = True
+is_dev = False
 
 env = environ.Env(DEBUG=(bool, True))
 

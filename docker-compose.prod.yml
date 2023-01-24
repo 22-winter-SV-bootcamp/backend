@@ -4,27 +4,16 @@ networks:
   doh:
     driver: bridge
 
-volumes:
-  static_volume: null
-  media_volume: null
-  build_folder: null
-  prometheus_data: null
-  grafana_data: null
-
 services:
   frontend:
     container_name: frontend
     build:
       context: ./frontend
-      args:
-        API_URL: "*"
     volumes:
       - ./frontend/:/frontend
       - build_folder:/frontend/dist
       - ./frontend/node_modules/:/frontend/node_modules
     tty: true
-    networks:
-      - doh
 
   backend:
     container_name: backend
@@ -41,7 +30,6 @@ services:
       - static_volume:/backend/staticfiles
       - media_volume:/backend/mediafiles
     depends_on:
-      - db
       - rabbitmq
       - redis
     networks:
@@ -51,7 +39,11 @@ services:
     build: ./nginx
     container_name: nginx
     ports:
-      - 80:8080
+      - "80:80"
+      - "443:443"
+    expose:
+      - 80
+      - 443
     volumes:
       - static_volume:/backend/staticfiles
       - media_volume:/backend/mediafiles
@@ -175,3 +167,10 @@ services:
       - 3100
     networks:
       - doh
+
+volumes:
+  static_volume: null
+  media_volume: null
+  build_folder: null
+  prometheus_data: null
+  grafana_data: null
