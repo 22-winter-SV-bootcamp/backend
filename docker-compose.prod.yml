@@ -1,22 +1,21 @@
 version: "3"
 
 services:
-  db:
-    container_name: mysqldb
-    image: mysql:latest
-    env_file :
-      - ./backend/devenvs/mysqldb.env
+  frontend:
+    build:
+      context: ./letterman-front
+      args:
+        API_URL: "*"
+    container_name: frontend
     volumes:
-     - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      timeout: 20s
-      retries: 10
+      - ./letterman-front:/frontend
+      - build_folder:/frontend/build
+      - ./letterman-front/node_modules/:/frontend/node_modules 
+    restart: always
+    stdin_open: true 
+    tty: true
+    networks:
+      - doh
 
 
   backend:
@@ -30,9 +29,14 @@ services:
       - "8080:8080"
     volumes:
       - ./backend:/app
+      - static_volume:/backend/staticfiles
+      - media_volume:/backend/mediafiles
     depends_on:
-      db:
-        condition: service_healthy
+      - db
+      - rabbitmq
+      - redis
+    networks:
+      - doh
 
   nginx:
     build: ./nginx
@@ -45,12 +49,133 @@ services:
       - build_folder:/var/www/frontend
     depends_on:
       - backend
-#      - frontend
+      - frontend
+    networks:
+      - doh
 
 
+  ai:
+    container_name: ai
+    build: ./ai
+    command: >
+      bash -c "python3 manage.py makemigrations &&
+               python3 manage.py migrate &&
+               python3 manage.py runserver 0.0.0.0:8081"
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./ai:/ai
+    depends_on:
+      - backend
+    networks:
+      - doh
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    hostname: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - doh
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management-alpine
+    environment:
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASSWORD=guest
+    ports:
+      - "5672:5672" 
+      - "15672:15672"
+    expose:
+      - "15672"
+    networks:
+      - doh
+    
+  celery_worker_1:
+    container_name: celery_worker_1
+    restart: always
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    volumes:
+      - ./backend:/backend
+    environment:
+      - C_FORCE_ROOT=true
+    command: sh -c "celery -A backend worker --loglevel=info"
+    depends_on:
+      - rabbitmq
+      - redis
+      - backend
+    networks:
+      - doh
+
+  celery_worker_2:
+    container_name: celery_worker_2
+    restart: always
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    volumes:
+      - ./backend:/backend
+    environment:
+      - C_FORCE_ROOT=true
+    command: sh -c "celery -A backend worker --loglevel=info"
+    depends_on:
+      - rabbitmq
+      - redis
+      - backend
+    networks:
+      - doh
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    ports:
+      - 9090:9090
+    networks:
+      - doh
+
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - 3100:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=root
+      - GF_SECURITY_ADMIN_PASSWORD=0707
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+    expose:
+      - 3100
+    networks:
+      - doh
+
+
+networks:
+  doh:
+    driver: bridge
 
 volumes:
-  mysql_data: 
-  static_volume:
-  media_volume:
-  build_folder:
+  static_volume: null
+  media_volume: null
+  build_folder: null
+  prometheus_data: null
+  grafana_data: null
