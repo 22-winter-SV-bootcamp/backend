@@ -12,7 +12,10 @@ from .tasks import ai_task
 from .serializers import imageSerializer
 from images.result import task_result
 import json
-from celery.exceptions import TimeoutError
+from django.core.cache import cache
+import redis
+
+
 
 
 class Images(APIView):
@@ -40,13 +43,24 @@ class Images(APIView):
         task = ai_task.delay(json.loads(json_text))
         return JsonResponse({"task_id": task.id})
 
+
 @api_view(['GET'])
 def get_task(request):
     if request.method == 'GET':
         try:
+            r = redis.Redis(host='redis',port=6379,decode_responses=True)
             task_id = request.GET.get('task_id')
-            AsyncResult(task_id).get(timeout=5)         # 5초동안 못찾으면 없는 task
             task = AsyncResult(task_id)
+            is_task = False
+            
+            for i in r.keys():                             # 있는 task인지 확인
+                a = r.get(i).split('"task_id": "')         # r.get(i) 타입은 스트링
+                print(r.get(i))
+                print('ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ')
+                if task_id == a[1][:-2]:
+                    is_task = True
+            if is_task == False:
+                raise Exception()
             
             if task.ready():                          
                 with open('images/sort/bottom.txt') as f:
@@ -91,7 +105,7 @@ def get_task(request):
             else:                           # task가 안끝났을때
                 res = task_result('Not yet')    
                 return JsonResponse(res,status=404)
-        except TimeoutError:                             # 없는 task_id일때
+        except:                             # 없는 task_id일때
             res = task_result('task does not exist')    
             return JsonResponse(res,status=404)
             
