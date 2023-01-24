@@ -1,28 +1,37 @@
 version: "3"
 
+networks:
+  doh:
+    driver: bridge
+
+volumes:
+  static_volume: null
+  media_volume: null
+  build_folder: null
+  prometheus_data: null
+  grafana_data: null
+
 services:
   frontend:
+    container_name: frontend
     build:
-      context: ./letterman-front
+      context: ./frontend
       args:
         API_URL: "*"
-    container_name: frontend
     volumes:
-      - ./letterman-front:/frontend
-      - build_folder:/frontend/build
-      - ./letterman-front/node_modules/:/frontend/node_modules 
-    restart: always
-    stdin_open: true 
+      - ./frontend/:/frontend
+      - build_folder:/frontend/dist
+      - ./frontend/node_modules/:/frontend/node_modules
     tty: true
     networks:
       - doh
-
 
   backend:
     container_name: backend
     build: ./backend
     command: >
-      bash -c "python3 manage.py makemigrations &&
+      bash -c "python3 manage.py makemigrations images &&
+               python3 manage.py makemigrations styles && 
                python3 manage.py migrate &&
                gunicorn backend.wsgi --bind 0.0.0.0:8080"
     ports:
@@ -52,7 +61,6 @@ services:
       - frontend
     networks:
       - doh
-
 
   ai:
     container_name: ai
@@ -167,15 +175,3 @@ services:
       - 3100
     networks:
       - doh
-
-
-networks:
-  doh:
-    driver: bridge
-
-volumes:
-  static_volume: null
-  media_volume: null
-  build_folder: null
-  prometheus_data: null
-  grafana_data: null
