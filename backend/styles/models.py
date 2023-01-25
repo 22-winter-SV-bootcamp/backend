@@ -11,6 +11,5 @@ class style(basemodel):
     bottom = models.CharField(max_length=36)
     bottom_color = models.CharField(max_length=36)
 
-    def __str__(self):
-        result_id = str(self.id)
-        return result_id
+    class Meta:
+        db_table = 'style'

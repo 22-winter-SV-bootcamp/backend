@@ -148,3 +148,4 @@ CACHES = {
         'LOCATION': 'redis://redis:6379',
     }
 }
+APPEND_SLASH = False
