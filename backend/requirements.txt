@@ -24,5 +24,4 @@ redis
 numpy>=1.18.5
 
 #monitoring
-django-prometheus
-
+django-prometheus==2.2.0

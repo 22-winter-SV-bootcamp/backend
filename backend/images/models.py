@@ -14,7 +14,6 @@ class image(basemodel):
     id = models.AutoField(primary_key=True)  # pk
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     link = models.CharField(max_length=200)
-    
-    def __str__(self):
-        result_id = str(self.id)
-        return result_id
+
+    class Meta:
+        db_table = 'image'

@@ -1,20 +1,34 @@
 version: "3"
 
+<<<<<<< HEAD
+=======
+networks:
+  doh:
+    driver: bridge
+
+>>>>>>> e1e5409104ce02ccfb31f073ceb1107e8b77f991
 services:
   frontend:
     container_name: frontend
     build:
       context: ./frontend
+<<<<<<< HEAD
       args:
         API_URL: "*"
+=======
+>>>>>>> e1e5409104ce02ccfb31f073ceb1107e8b77f991
     volumes:
       - ./frontend/:/frontend
       - build_folder:/frontend/dist
       - ./frontend/node_modules/:/frontend/node_modules
     tty: true
+<<<<<<< HEAD
     networks:
       - doh
   
+=======
+
+>>>>>>> e1e5409104ce02ccfb31f073ceb1107e8b77f991
   backend:
     container_name: backend
     build: ./backend
@@ -22,7 +36,7 @@ services:
       bash -c "python3 manage.py makemigrations images &&
                python3 manage.py makemigrations styles && 
                python3 manage.py migrate &&
-               gunicorn backend.wsgi --bind 0.0.0.0:8080"
+               gunicorn backend.wsgi --bind 0.0.0.0:8080 --timeout 240"
     ports:
       - "8080:8080"
     volumes:
@@ -39,7 +53,11 @@ services:
     build: ./nginx
     container_name: nginx
     ports:
-      - 80:8080
+      - "80:80"
+#      - "443:443"
+    expose:
+      - 80
+#      - 443
     volumes:
       - static_volume:/backend/staticfiles
       - media_volume:/backend/mediafiles
@@ -49,6 +67,8 @@ services:
       - frontend
     networks:
       - doh
+<<<<<<< HEAD
+=======
 
   ai:
     container_name: ai
@@ -142,7 +162,104 @@ services:
       - 9090:9090
     networks:
       - doh
+>>>>>>> e1e5409104ce02ccfb31f073ceb1107e8b77f991
 
+  ai:
+    container_name: ai
+    build: ./ai
+    command: >
+      bash -c "python3 manage.py makemigrations &&
+               python3 manage.py migrate &&
+               python3 manage.py runserver 0.0.0.0:8081"
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./ai:/ai
+    depends_on:
+      - backend
+    networks:
+      - doh
+
+<<<<<<< HEAD
+  redis:
+    container_name: redis
+    image: redis:latest
+    hostname: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - doh
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management-alpine
+    environment:
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASSWORD=guest
+    ports:
+      - "5672:5672" 
+      - "15672:15672"
+    expose:
+      - "15672"
+    networks:
+      - doh
+    
+  celery_worker_1:
+    container_name: celery_worker_1
+    restart: always
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    volumes:
+      - ./backend:/backend
+    environment:
+      - C_FORCE_ROOT=true
+    command: sh -c "celery -A backend worker --loglevel=info"
+    depends_on:
+      - rabbitmq
+      - redis
+      - backend
+    networks:
+      - doh
+
+  celery_worker_2:
+    container_name: celery_worker_2
+    restart: always
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    volumes:
+      - ./backend:/backend
+    environment:
+      - C_FORCE_ROOT=true
+    command: sh -c "celery -A backend worker --loglevel=info"
+    depends_on:
+      - rabbitmq
+      - redis
+      - backend
+    networks:
+      - doh
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    ports:
+      - 9090:9090
+    networks:
+      - doh
+
+=======
+>>>>>>> e1e5409104ce02ccfb31f073ceb1107e8b77f991
   grafana:
     image: grafana/grafana
     container_name: grafana
@@ -162,7 +279,10 @@ services:
       - 3100
     networks:
       - doh
+<<<<<<< HEAD
  
+=======
+>>>>>>> e1e5409104ce02ccfb31f073ceb1107e8b77f991
 
 volumes:
   static_volume: null
@@ -170,7 +290,10 @@ volumes:
   build_folder: null
   prometheus_data: null
   grafana_data: null
+<<<<<<< HEAD
 
 networks:
   doh:
     driver: bridge
+=======
+>>>>>>> e1e5409104ce02ccfb31f073ceb1107e8b77f991
