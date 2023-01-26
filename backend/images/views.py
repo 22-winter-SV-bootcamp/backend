@@ -90,7 +90,6 @@ def get_task(request,taskId):
     if request.method == 'GET':
         try:
             r = redis.Redis(host='redis',port=6379,decode_responses=True)
-            # task_id = request.GET.get('task_id')
             task_id = taskId
             task = AsyncResult(task_id)
             is_task = False
