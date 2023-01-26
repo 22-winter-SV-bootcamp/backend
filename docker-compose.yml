@@ -144,9 +144,7 @@ services:
       context: ./monitoring/grafana
     container_name: grafana
     ports:
-      - "3100:3100"
-    expose:
-      - 3100
+      - "3100:3000"
     depends_on:
       - prometheus
     networks:
@@ -166,7 +164,7 @@ services:
       - --collector.filesystem.ignored-mount-points
       - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
     ports:
-      - "9101:9101"
+      - "9200:9100"
     restart: always
     networks:
       - doh
