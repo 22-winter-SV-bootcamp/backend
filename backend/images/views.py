@@ -12,7 +12,6 @@ from .tasks import ai_task
 from .serializers import imageSerializer
 from images.result import task_result
 import json
-from celery.exceptions import TimeoutError
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser
@@ -86,12 +85,12 @@ class Images(APIView):
                 status.HTTP_404_NOT_FOUND: "Error"
             })
 @api_view(['GET'])
-def get_task(request):
+def get_task(request,taskId):
     
     if request.method == 'GET':
         try:
             r = redis.Redis(host='redis',port=6379,decode_responses=True)
-            task_id = request.GET.get('task_id')
+            task_id = taskId
             task = AsyncResult(task_id)
             is_task = False
             
@@ -150,4 +149,3 @@ def get_task(request):
         except:                             # 없는 task_id일때
             res = task_result('task does not exist')    
             return JsonResponse(res,status=404)
-            
