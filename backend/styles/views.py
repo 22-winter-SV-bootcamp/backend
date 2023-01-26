@@ -34,10 +34,12 @@ class ShowStyleView(APIView):
             gender = request.GET.get('gender')
             end_date = datetime.datetime.today()                  
             start_date = end_date + datetime.timedelta(days=-7) 
+            
             style_list = [
                 style for style in style.objects.filter(created_at__range=(
                 start_date, end_date)) if style.gender == gender
             ]
+            
             list_cnt = []
             for a in style_list:
                 list_cnt.append(str(a.top+a.top_color+a.bottom+a.bottom_color))
@@ -59,9 +61,8 @@ class ShowStyleView(APIView):
                         'count': sp[1].replace(' ','')
                         }
                     return JsonResponse(res,status=status.HTTP_200_OK)
-                else:
-                    raise Exception
-            
+            raise Exception
+        
         except:
             return JsonResponse({'Error':'gender name is not in db'},status=status.HTTP_404_NOT_FOUND)
         
