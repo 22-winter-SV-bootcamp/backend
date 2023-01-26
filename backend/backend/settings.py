@@ -3,7 +3,7 @@ import os, environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-is_dev = True
+is_dev = False
 
 env = environ.Env(DEBUG=(bool, True))
 
@@ -47,8 +47,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
