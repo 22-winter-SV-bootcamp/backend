@@ -15,7 +15,6 @@ import json
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser
-
 from django.core.cache import cache
 import redis
 

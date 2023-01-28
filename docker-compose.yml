@@ -150,16 +150,6 @@ services:
     networks:
       - doh
 
-  # node-exporter:
-  #   image: prom/node-exporter:latest
-  #   container_name: node_exporter
-  #   restart: unless-stopped
-  #   expose:
-  #     - 9100
-  #   ports:
-  #     - 9100:9100
-
-
   node-exporter:
     container_name: node-exporter
     image: prom/node-exporter
