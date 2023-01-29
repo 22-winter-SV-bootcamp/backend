@@ -28,3 +28,15 @@ def get_dict(task):
     dict = {string:i for i, string in enumerate(lists)}     # confidence별로 dict의 value값 지정 (낮을수록 높은 confidence)    
     return dict
 
+def task_result(status,result=None):
+    if result is not None:
+        task_result = {
+            'status' : status,
+            'result' : result
+        }
+        return task_result
+    else: 
+        task_result = {
+            'status' : status
+        }
+        return task_result

@@ -8,8 +8,7 @@ from images.models import image
 from .serializers import imageSerializer
 from rest_framework.views import APIView
 from .utils import get_image_url
-from .tasks import ai_task, task_exist, get_dict
-from images.result import task_result
+from .tasks import ai_task, task_exist, get_dict, task_result
 import json
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
