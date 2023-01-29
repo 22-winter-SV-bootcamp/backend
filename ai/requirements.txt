@@ -2,6 +2,7 @@
 Django==4.0.7
 djangorestframework==3.13.1
 django-environ==0.9.0
+django-cors-headers==3.13.0
 
 # yolov5
 matplotlib>=3.2.2
