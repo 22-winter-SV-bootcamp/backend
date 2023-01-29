@@ -16,30 +16,12 @@ from rest_framework.parsers import MultiPartParser
 from django.core.cache import cache
 from .sort import Sort, ai_sort
 
-qs_page = [
-	openapi.Parameter(
-        "page",
-        openapi.IN_QUERY,
-        description="page",
-        type=openapi.FORMAT_DATE,
-        default=""
-    )
-]
-qs_task = [
-	openapi.Parameter(
-        "task_id",
-        openapi.IN_QUERY,
-        description="task",
-        type=openapi.TYPE_STRING,
-        default=""
-    )
-]
+responses={status.HTTP_200_OK: 'Success', status.HTTP_404_NOT_FOUND: "Error"}
 
 class Images(APIView):
-    @swagger_auto_schema(operation_id='recent image',manual_parameters=qs_page,responses={
-                status.HTTP_200_OK: 'Success',
-                status.HTTP_404_NOT_FOUND: "Error"
-            })
+    qs_page = [openapi.Parameter("page", openapi.IN_QUERY, description="최근이미지 링크 반환", type=openapi.FORMAT_DATE)]
+    @swagger_auto_schema(operation_id='recent image',manual_parameters=qs_page,responses=responses)
+    
     def get(self, request):
         pages = request.GET.get('page')
         recent_list = image.objects.all().order_by('-created_at')   #최근 이미지 별로 정렬
@@ -56,27 +38,19 @@ class Images(APIView):
             return JsonResponse({"Error":"Empty page"},status=status.HTTP_404_NOT_FOUND)
     
     parser_classes = [MultiPartParser]
-    @swagger_auto_schema(
-            operation_id='task_id',
-            manual_parameters=[
-                openapi.Parameter('file', openapi.IN_FORM, type=openapi.TYPE_FILE, description='image to be uploaded'),
-            ],
-            responses={
-                status.HTTP_200_OK: 'Success',
-                status.HTTP_404_NOT_FOUND: "Error"
-            }
-        )
+    qs_img = [openapi.Parameter('file', openapi.IN_FORM, type=openapi.TYPE_FILE, description='task_id 반환')]
+    @swagger_auto_schema(operation_id='task_id', manual_parameters=qs_img, responses=responses)
+    
     def post(self, request):
         json_text = '{"file": "'+get_image_url(request.FILES.get('file'))+'"}'
         task = ai_task.delay(json.loads(json_text))
         return JsonResponse({"task_id": task.id})
 
 
-@swagger_auto_schema(operation_id='task_result',method='get',manual_parameters=qs_task,responses={
-                status.HTTP_200_OK: 'Success',
-                status.HTTP_404_NOT_FOUND: "Error"
-            })
+qs_task = [openapi.Parameter("task_id", openapi.IN_QUERY, description="ai 처리 결과 반환", type=openapi.TYPE_STRING)]
+@swagger_auto_schema(operation_id='task_result',method='get',manual_parameters=qs_task,responses=responses)
 @api_view(['GET'])
+
 def get_task(request,task_id):
     try:
         task = AsyncResult(task_id)
