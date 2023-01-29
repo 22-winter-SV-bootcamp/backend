@@ -11,13 +11,11 @@ from io import BytesIO
 def get_ai_result(request):
     res = requests.get(request.data.get("file"))
     img = Image.open(BytesIO(res.content))
-
     # img = Image.open(io.BytesIO(request.FILES.get('file').read()))
     hubconfig = os.path.join(os.getcwd(), 'images', 'yolov5')
     weightfile = os.path.join(os.getcwd(), 'images', 'yolov5',
                               'runs', 'train', 'clothesClassification', 'weights', 'best.pt')
     model = torch.hub.load(hubconfig, 'custom', path=weightfile, source='local')
-
     results = model(img)
     # print(results)
     results.render()
@@ -26,7 +24,7 @@ def get_ai_result(request):
     # print(results_dict)
     if not results_dict:
         return JsonResponse({"ai_results": "none"})
-    else:
+    if results_dict:
         ai_results = []
         for result in results_dict:
             if result.get('name') not in ai_results:
