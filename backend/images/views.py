@@ -7,14 +7,18 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from images.models import image 
 from .serializers import imageSerializer
 from rest_framework.views import APIView
-from .utils import get_image_url
-from .tasks import ai_task, task_exist, get_dict, task_result
 import json
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser
 from django.core.cache import cache
-from .sort import Sort, ai_sort
+from .sort import Sort
+from .utils import get_image_url
+from .tasks import ai_task
+from .result import task_result
+from .istask import task_exist
+from .todict import get_dict
+from .classify import classify
 
 responses={status.HTTP_200_OK: 'Success', status.HTTP_404_NOT_FOUND: "Error"}
 
@@ -67,7 +71,7 @@ def get_task(request,task_id):
             bot = Sort.get_bot()
             top = Sort.get_top()
             dict = get_dict(task)
-            large_top,large_bot = ai_sort(dict,top,bot)
+            large_top,large_bot = classify(dict,top,bot)
             res = task_result('done',{'top' : large_top, 'bottom' : large_bot})
             return JsonResponse(res,status=200)
         if not task.ready():                           # task가 안끝났을때
