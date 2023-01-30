@@ -42,14 +42,13 @@ class ShowStyleView(APIView):
             gender = request.POST['gender'] 
             data = request.FILES.get('file')
             url = get_image_url(data)
-            
-            image.objects.create(link=url)
+
             style_info = style(gender = request.POST['gender'],top=request.POST['top'],
             top_color=request.POST['top_color'],bottom=request.POST['bottom'],
-            bottom_color=request.POST['bottom_color'],image_id=image.objects.get(link=url))
+            bottom_color=request.POST['bottom_color'],image_id=image.objects.create(link=url))
             style_info.save()
-            res = get_ranking(gender)
             
+            res = get_ranking(gender)
             if cache.get(gender) != res:                    # 이전 랭킹하고 다르면 업데이트
                 cache.set(gender,res,60*60)       
             return JsonResponse({"link": url},status=status.HTTP_200_OK)
