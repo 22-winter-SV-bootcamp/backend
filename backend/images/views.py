@@ -73,10 +73,14 @@ class Images(APIView):
             }
         )
     def post(self, request):
-        json_text = '{"file": "'+get_image_url(request.FILES.get('file'))+'"}'
-        task = ai_task.delay(json.loads(json_text))
-        print(task)
-        return JsonResponse({"task_id": task.id})
+        file = request.FILES.get('file')
+        
+        if not cache.get(file):
+            json_text = '{"file": "'+get_image_url(file)+'"}'
+            task = ai_task.delay(json.loads(json_text))
+            cache.set(file, task.id)
+
+        return JsonResponse({"task_id": cache.get(file)})
 
 
 @swagger_auto_schema(operation_id='task_result',method='get',manual_parameters=qs_task,responses={
