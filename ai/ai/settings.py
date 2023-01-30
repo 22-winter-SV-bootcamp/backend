@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     # monitoring
-    'django_prometheus'
+    'django_prometheus',
     'images',
     'corsheaders',
 ]
