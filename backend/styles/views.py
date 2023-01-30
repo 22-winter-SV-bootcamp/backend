@@ -15,7 +15,7 @@ from .ranking import get_ranking
 responses = {status.HTTP_200_OK: 'Success', status.HTTP_404_NOT_FOUND: "Error"}
 
 class ShowStyleView(APIView):
-    qs_task = [openapi.Parameter("gender", openapi.IN_QUERY, description="랭킹 1등 코디정보 반환", type=openapi.TYPE_STRING)]
+    qs_task = [openapi.Parameter("gender", openapi.IN_QUERY, description="gender 입력", type=openapi.TYPE_STRING)]
     @swagger_auto_schema(operation_id='ranking',manual_parameters=qs_task,responses=responses)
     
     def get(self, request):
@@ -28,14 +28,14 @@ class ShowStyleView(APIView):
         except:
             return JsonResponse({'Error':'gender name is not in db'},status=status.HTTP_404_NOT_FOUND)
         
-    qs_custom = [openapi.Parameter('file', openapi.IN_FORM, type=openapi.TYPE_FILE, description='image to be uploaded'),
+    qs_custom = [openapi.Parameter('file', openapi.IN_FORM, type=openapi.TYPE_FILE, description='image 입력'),
                  openapi.Parameter('gender', openapi.IN_FORM, type=openapi.TYPE_STRING),
                  openapi.Parameter('top', openapi.IN_FORM, type=openapi.TYPE_STRING),
                  openapi.Parameter('top_color', openapi.IN_FORM, type=openapi.TYPE_STRING),
                  openapi.Parameter('bottom', openapi.IN_FORM, type=openapi.TYPE_STRING),
                  openapi.Parameter('bottom_color', openapi.IN_FORM, type=openapi.TYPE_STRING)]
     parser_classes = [MultiPartParser]
-    @swagger_auto_schema(operation_id='custom image', manual_parameters=qs_custom,responses=responses)
+    @swagger_auto_schema(operation_id='custom image 링크', manual_parameters=qs_custom,responses=responses)
     
     def post(self,request): 
         try:
