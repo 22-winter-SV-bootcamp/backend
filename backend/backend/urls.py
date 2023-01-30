@@ -10,9 +10,9 @@ from rest_framework.permissions import AllowAny
 
 schema_view_v1 = get_schema_view(
     openapi.Info(
-        title="letterman APIs",
+        title="Simpson Film APIs",
         default_version='v1',
-        description="letterman project",
+        description="SV winter project",
         terms_of_service="https://www.google.com/policies/terms/",
     ),
     public=True,

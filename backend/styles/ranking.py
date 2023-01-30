@@ -32,5 +32,5 @@ def get_ranking(gender):
                 'bottom_color':b.bottom_color,
                 'count': sp[1].replace(' ','')
                 }           
-        return res
+            return res  
     return ('except')
