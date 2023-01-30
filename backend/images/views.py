@@ -1,7 +1,6 @@
 from django.http import JsonResponse
 from celery.result import AsyncResult
 from rest_framework import status
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from images.models import image 
@@ -12,13 +11,8 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser
 from django.core.cache import cache
-from .sort import Sort
-from .utils import get_image_url
+from .utils import get_image_url, is_task_exist, get_task_result, get_sort_list, classify, get_dict
 from .tasks import ai_task
-from .result import task_result
-from .istask import task_exist
-from .todict import get_dict
-from .classify import classify
 
 responses={status.HTTP_200_OK: 'Success', status.HTTP_404_NOT_FOUND: "Error"}
 
@@ -63,20 +57,18 @@ qs_task = [openapi.Parameter("task_id", openapi.IN_QUERY, description="ai 처리
 def get_task(request,task_id):
     try:
         task = AsyncResult(task_id)
-        is_task = task_exist(task_id)
+        is_task = is_task_exist(task_id)
         if is_task == False:
             raise Exception()
         
-        if task.ready():                      
-            bot = Sort.get_bot()
-            top = Sort.get_top()
+        if task.ready():            
             dict = get_dict(task)
-            large_top,large_bot = classify(dict,top,bot)
-            res = task_result('done',{'top' : large_top, 'bottom' : large_bot})
+            large_top,large_bot = classify(dict, get_sort_list('top'), get_sort_list('bottom'))
+            res = get_task_result('done',{'top' : large_top, 'bottom' : large_bot})
             return JsonResponse(res,status=200)
-        if not task.ready():                           # task가 안끝났을때
-            res = task_result('Not yet')    
+        elif not task.ready():                           # task가 안끝났을때
+            res = get_task_result('Not yet')    
             return JsonResponse(res,status=404)
     except:                                            # 없는 task_id일때
-        res = task_result('task does not exist')    
+        res = get_task_result('task does not exist')    
         return JsonResponse(res,status=404)
