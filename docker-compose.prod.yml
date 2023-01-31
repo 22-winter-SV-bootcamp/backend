@@ -131,44 +131,39 @@ services:
       - doh
 
   prometheus:
-    image: prom/prometheus:latest
     container_name: prometheus
+    image: prom/prometheus:latest
+    restart: always
+    ports:
+      - "9090:9090"
+    links:
+      - cadvisor
+      - alertmanager
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
+      - ./monitoring/prometheus/:/etc/prometheus/
+    user: root
+    depends_on:
+      - cadvisor
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
-    ports:
-      - 9090:9090
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
     networks:
       - doh
 
 
   grafana:
-    image: grafana/grafana
+    build:
+      context: ./monitoring/grafana
     container_name: grafana
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
     ports:
-      - 3100:3000
-    environment:
-      - GF_SECURITY_ADMIN_USER=root
-      - GF_SECURITY_ADMIN_PASSWORD=0707
-      - GF_USERS_ALLOW_SIGN_UP=false
+      - "3100:3000"
     depends_on:
       - prometheus
-    expose:
-      - 3100
     networks:
       - doh
-      
+
   node-exporter:
     container_name: node-exporter
     image: prom/node-exporter
@@ -200,7 +195,7 @@ services:
       - '--storage.path=/alertmanager'
     networks:
       - doh
-
+      
 
   cadvisor:
     container_name: cadvisor
@@ -217,6 +212,7 @@ services:
     restart: always
     networks:
       - doh
+  
 volumes:
   static_volume: null
   media_volume: null
