@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@feature/#60
-        
+        uses: actions/checkout@main
+
       - name: build docker
         run: docker build -t backend-backend
