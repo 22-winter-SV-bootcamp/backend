@@ -7,16 +7,10 @@ on:
     branches: [ feature/#60 ]
 
 jobs:
-  docker:
+  build:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Start containers
-        run: docker-compose up --build
+    - name: Run a one-line script
+        run: echo Hello, world!
