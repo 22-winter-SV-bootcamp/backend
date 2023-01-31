@@ -48,10 +48,10 @@ services:
     volumes:
       - static_volume:/backend/staticfiles
       - media_volume:/backend/mediafiles
-      - build_folder:/var/www/frontend
+      # - build_folder:/var/www/frontend
     depends_on:
       - backend
-      - frontend
+      # - frontend
     networks:
       - doh
 
