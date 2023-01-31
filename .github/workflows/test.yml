@@ -12,5 +12,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Run a one-line script
-      run: echo Hello, world!
+      - name: checkout
+        uses: actions/checkout@feature/#60
+        run: docker build -t backend-backend
