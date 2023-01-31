@@ -7,7 +7,7 @@ on:
     branches: [ feature/#60 ]
 
 jobs:
-  build:
+  docker:
 
     runs-on: ubuntu-latest
 
