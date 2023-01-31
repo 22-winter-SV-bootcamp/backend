@@ -20,4 +20,4 @@ jobs:
           echo ${{ secrets.ENV_VARS }} >> .env
 
       - name: build docker
-        run: docker-compose up --build
+        run: docker-compose -f docker-compose.prod.yml up --build
