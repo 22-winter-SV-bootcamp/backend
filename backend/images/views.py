@@ -24,7 +24,7 @@ class Images(APIView):
         pages = request.GET.get('page')
         recent_list = image.objects.all().order_by('-created_at')   #최근 이미지 별로 정렬
         link_list = recent_list.values('link')                      # 모델에서 링크만 추출
-        paginator = Paginator(link_list,5)                          # 링크 5개씩 페이지네이션
+        paginator = Paginator(link_list,4)                          # 링크 5개씩 페이지네이션
         try:
             list = paginator.page(pages)                            # 보여줄 페이지는 쿼리스트링 값
             res = list.object_list
