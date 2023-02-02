@@ -4,18 +4,6 @@ networks:
   doh:
     driver: bridge
 
-services:
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-    volumes:
-      - ./frontend/:/frontend
-      - build_folder:/frontend/dist
-      - ./frontend/node_modules/:/frontend/node_modules
-    tty: true
-
   backend:
     container_name: backend
     build: ./backend
