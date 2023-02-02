@@ -22,7 +22,9 @@ class ShowStyleView(APIView):
         try:
             gender = request.GET.get('gender')
             res = cache.get(gender)
-            if res == 'except':
+            if not res:
+                return JsonResponse(get_ranking(gender),status=status.HTTP_200_OK)
+            elif res == 'except':
                 raise Exception
             return JsonResponse(res,status=status.HTTP_200_OK)
         except:
